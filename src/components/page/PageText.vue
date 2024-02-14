@@ -29,11 +29,9 @@
     }
 
     function handleInput(event) {
-        setAreaHeight(event.target)
-        emit('contentchange', {
-            content: content.value,
-            textType: "p"
-        });
+        setAreaHeight(event.target);
+        //console.log(event.target.selectionStart)
+        emit('contentchange', content.value);
     }
 
     function preventEnter(event) {

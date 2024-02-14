@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageText v-if="data.type == 'text'" :data="{content: data.content, textType: data.textType}" @contentchange="handleChange" @newblock="newBlock"/>
+        <PageText v-if="data.type == 'text'" :data="data" @contentchange="(data) => $emit('contentchange', data)" @newblock="$emit('newblock')"/>
     </div>
 </template>
 
@@ -15,16 +15,6 @@
     });
 
     const emit = defineEmits(['contentchange', "newblock"]);
-
-    function handleChange(data) {
-        let updatedContent = data;
-        updatedContent["type"] = "text";
-        emit('contentchange', updatedContent);
-    }
-
-    function newBlock() {
-        emit("newblock");
-    }
 </script>
 
 <style lang="scss" scoped>

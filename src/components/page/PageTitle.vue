@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1 contenteditable="true" @input="handleInput">{{ props.title }}</h1>
+        <h1 contenteditable="true" @input="handleInput">{{ props.data }}</h1>
     </div>
 </template>
 
@@ -8,7 +8,7 @@
 import { ref } from 'vue';
 
 const props = defineProps({
-    title: {
+    data: {
         type: String,
         required: true
     }
@@ -18,7 +18,7 @@ const emit = defineEmits(['contentChange']);
 
 function handleInput(event) {
     const updatedTitle = event.target.innerText;
-    emit('contentChange', updatedTitle);
+    emit('titlechange', updatedTitle);
 }
 </script>
 
