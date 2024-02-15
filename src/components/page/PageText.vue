@@ -1,9 +1,9 @@
 <template>
-    <textarea :class="data.textType" 
-        @input="handleInput" 
+    <p :class="data.textType" 
         @keydown="event => preventEnter(event)" 
-        v-model="content" 
-        ref="textareaRef"></textarea>
+        contenteditable="true"
+        ref="textRef"
+        @input="handleInput"></p>
 </template>
 
 <script setup>
@@ -16,43 +16,65 @@
         }
     });
 
-    const textareaRef = ref(null); 
-
-    //textareaRef.value.style.height = 
-    
-
+    const textRef = ref();
     const content = ref(props.data.content);
-
     const emit = defineEmits(['contentchange', "newblock"]);
 
     onMounted(() => {
-        if (textareaRef.value) {
-            setAreaHeight(textareaRef.value);
-        }
-        if (props.data.newlyCreated == true) textareaRef.value.focus();
+        if (props.data.newlyCreated == true) textRef.value.focus();
+        textRef.value.innerHTML = props.data.content;
     });
 
     watch(content, () => {
         emit('contentchange', content.value);
-        setAreaHeight(textareaRef.value);
     })
 
-    function setAreaHeight(textarea) {
-        console.log(content.value)
-        textarea.style.height = '5px';
-        textarea.style.height = (textarea.scrollHeight) + "px";
+    function handleInput() {
+        content.value = textRef.value.innerHTML;
     }
 
-    function handleInput(event) {
-        setAreaHeight(event.target);
+    function logCharsAfterCaret() {
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return; // Exit if no range is selected
+      const range = selection.getRangeAt(0);
+
+      // Create a clone of the contenteditable element for measurement
+      const clone = textRef.value.cloneNode(true);
+      clone.style.position = 'absolute';
+      clone.style.visibility = 'hidden';
+      clone.style.width = textRef.value.offsetWidth + 'px';
+      document.body.appendChild(clone);
+
+      // Use the range to set the content of the clone up to the caret position
+      const rangeClone = range.cloneRange();
+      rangeClone.selectNodeContents(textRef.value);
+      rangeClone.setEnd(range.endContainer, range.endOffset);
+      clone.innerHTML = ''; // Clear the clone first
+      clone.appendChild(rangeClone.cloneContents());
+
+      // The caret position in terms of HTML content
+      const caretPosHTML = clone.innerHTML.length;
+
+      // Clean up by removing the clone
+      document.body.removeChild(clone);
+
+      // Extract content after the caret position, considering HTML markup
+      const contentAfterCaretHTML = textRef.value.innerHTML.substring(caretPosHTML);
+      const contentBeforeCaretHTML = textRef.value.innerHTML.substring(0, caretPosHTML);
+      return {
+        before: contentBeforeCaretHTML,
+        after: contentAfterCaretHTML
+      };
     }
 
     function preventEnter(event) {
         if (event.keyCode === 13 && !event.shiftKey) {
             event.preventDefault();
-            const oldContent = content.value.slice(textareaRef.value.selectionStart);
-            content.value = content.value.slice(0, textareaRef.value.selectionStart);
-            emit("newblock", oldContent);
+            const caretContent = logCharsAfterCaret();
+
+            textRef.value.innerHTML = caretContent.before;
+            content.value = caretContent.before;
+            emit("newblock", caretContent.after);
         }
     }
 </script>
