@@ -1,10 +1,10 @@
 <template>
     <div>
-        <button @click="$emit('newblock', '')" :class="{hidden: !props.buttonsVisible}">
-            <img  src="@/assets/icons/plus.svg" alt="">
-        </button>
-        <button :class="{hidden: !props.buttonsVisible}">
+        <button :class="{hidden: !props.buttonsVisible}" @contextmenu.prevent="$emit('buttonclick')" @click="$emit('buttonclick')">
             <img src="@/assets/icons/dots-horizontal.svg" alt="">
+        </button>
+        <button @click="$emit('newblock', '')" :class="{hidden: !props.buttonsVisible}" @contextmenu.prevent="$emit('buttonclick')">
+            <img  src="@/assets/icons/plus.svg" alt="">
         </button>
     </div>
 </template>
@@ -16,12 +16,13 @@
             required: true
         }
     });
+
+    const emit = defineEmits(["buttonclick", "newblock"])
 </script>
 
 <style lang="scss" scoped>
     div {
         display: flex;
-        flex-direction: row-reverse;
         padding-right: 1rem;
         button {
             background-color: transparent;

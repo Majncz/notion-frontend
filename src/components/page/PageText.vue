@@ -80,11 +80,8 @@
 </script>
 
 <style lang="scss" scoped>
-    textarea {
+    p {
         width: 100%;
-        height: 0px;
-        border: none;
-        resize: none;
     }
     .normal {
         font-size: 1.3rem;

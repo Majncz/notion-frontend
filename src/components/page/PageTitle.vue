@@ -33,7 +33,7 @@ div {
 
     h1 {
         font-size: 5rem;
-        font-weight: 500;
+        font-weight: 700;
     }
 }
 </style>
