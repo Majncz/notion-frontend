@@ -14,7 +14,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['contentChange']);
+const emit = defineEmits(['titlechange']);
 
 function handleInput(event) {
     const updatedTitle = event.target.innerText;
@@ -24,6 +24,7 @@ function handleInput(event) {
 
 <style lang="scss" scoped>
 div {
+    padding-left: 5.5rem;
     width: 100%;
     padding-top: 6rem;
     padding-bottom: 3rem;

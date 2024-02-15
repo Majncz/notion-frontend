@@ -1,6 +1,6 @@
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
-  import { onBeforeMount, ref, onMounted } from "vue"
+  import { onBeforeMount, ref, onMounted, watch } from "vue"
   import PageTitle from "@/components/page/PageTitle.vue";
   import PageBlock from "@/components/page/PageBlock.vue";
 
@@ -32,6 +32,7 @@
 
     static changeTitle(newTitle) {
       Page.title.value.content = newTitle;
+      Page.postData();
     }
 
     static postData() {
@@ -40,7 +41,7 @@
       data[Page.title.value.id].id = undefined;
 
       Page.blockList.value.forEach((value) => {
-        data[value.id] = value.export();
+        data[value.id] = value.exportDatabase();
       })
 
       fetch(`http://${apiURL}/page`, {
@@ -70,13 +71,17 @@
       Page.getBlockByID(id).content = newContent;
     }
 
-    static newBlock(previousBlockID) {
+    static newBlock(previousBlockID, oldContent) {
       const previousBlock = Page.getBlockByID(previousBlockID);
       let newBlock = new Block(previousBlock.export(), crypto.randomUUID());
-      newBlock.content = "T";
-      Page.blockList.value.push(newBlock);
-
-      console.log(Page.blockList.value);
+      newBlock.content = oldContent;
+      newBlock.newlyCreated = true;
+      const newBlockIndex = Page.blockList.value.findIndex((value) => value.id == previousBlock.id) + 1;
+      Page.blockList.value = [
+        ...Page.blockList.value.slice(0, newBlockIndex),
+        newBlock,
+        ...Page.blockList.value.slice(newBlockIndex)
+      ]
     }
   }
 
@@ -85,6 +90,7 @@
     content;
     textType;
     id;
+    newlyCreated = false; // true/false - it is just to set the cursor to the new block after it is created - it is not stored in database
 
     constructor(block, id) {
       this.type = block.type;
@@ -94,6 +100,15 @@
     }
 
     export() {
+      return {
+        type: this.type,
+        content: this.content,
+        textType: this.textType,
+        newlyCreated: this.newlyCreated
+      }
+    }
+
+    exportDatabase() {
       return {
         type: this.type,
         content: this.content,
@@ -117,22 +132,28 @@
       console.error('Error:', error);
     }
   });
+
+  // this is extremely unoptimalised, you don't to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
+  watch(Page.blockList, () => {
+    Page.postData();
+  }, { deep: true })
 </script>
 
 <template>
   <div class="page-wrapper" v-if="areDataLoaded">
     <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
-    <PageBlock v-for="(blockKey, i) in Page.getBlockKeys()" :key="i" 
+    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
       :data="Page.getBlockData(blockKey)"
       @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
-      @newblock="Page.newBlock(blockKey)"/>
+      @newblock="(value) => Page.newBlock(blockKey, value)"/>
   </div>
 </template>
 
 <style lang="scss" scoped>
   div.page-wrapper {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
+    padding-bottom: 20rem;
 
     display: flex;
     flex-direction: column;
