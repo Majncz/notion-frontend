@@ -6,6 +6,7 @@
 
   const apiURL = "localhost:3000"
   const areDataLoaded = ref(false);
+  const mousePosition = ref({});
 
   class Page {
     static title = ref({});
@@ -137,12 +138,18 @@
   watch(Page.blockList, () => {
     Page.postData();
   }, { deep: true })
+
+  document.addEventListener("mousemove", (event) => {
+    mousePosition.value.y = event.clientY;
+    mousePosition.value.x = event.clientX;
+  })
 </script>
 
 <template>
   <div class="page-wrapper" v-if="areDataLoaded">
     <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
     <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
+      :mousePosition="mousePosition"
       :data="Page.getBlockData(blockKey)"
       @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
       @newblock="(value) => Page.newBlock(blockKey, value)"/>

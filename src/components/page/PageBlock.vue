@@ -6,7 +6,7 @@
             @contentchange="(data) => $emit('contentchange', data)" 
             @newblock="(value) => $emit('newblock', value)"/>
     </div>
-    <ContextMenu :isVisible="contextMenuVisible" @visible="(value) => contextMenuVisible = value"/>
+    <ContextMenu @mouseleave="contextMenuVisible = false" v-if="contextMenuVisible" :mousePosition="props.mousePosition" :menuItems="menuItems" />
 </template>
 
 <script setup>
@@ -19,11 +19,32 @@
         data: {
             type: Object,
             required: true
+        }, mousePosition: {
+            type: Object,
+            required: true
         }
     });
 
     const buttonsVisible = ref(false);
     const contextMenuVisible = ref(false);
+    const menuItems = ref([]);
+
+    menuItems.value = [
+        {
+          content: 'Option1',
+          subItems: [
+            { content: 'Suboption1',
+              subItems: [
+                    {content: "Suboption on suboption 1"},
+                    {content: "Suboption on suboption 2"}
+                ]},
+            { content: 'Suboption2' },
+          ],
+        },
+        {
+          content: 'Option2',
+        },
+    ]
 
     const emit = defineEmits(['contentchange', "newblock"]);
 </script>

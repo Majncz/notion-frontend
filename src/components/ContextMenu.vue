@@ -1,41 +1,47 @@
 <template>
-    <div class="overlay-wrapper" ref="overlayRef" v-show="isVisible" @mouseleave="() => {isVisible = false; $emit('visible', isVisible)}">
-        <slot></slot>
+    <div class="context-menu" ref="contextMenuRef">
+      <ContextMenuButton
+        v-for="(item, index) in props.menuItems"
+        :key="index"
+        :content="item.content"
+        :subItems="item.subItems"
+        :firstLayer="true"
+      ></ContextMenuButton>
     </div>
-</template>
-
-<script setup>
+  </template>
+  
+  <script setup>
     import { onMounted, ref, watch } from 'vue';
-
+    import ContextMenuButton from './ContextMenuButton.vue';
+  
     const props = defineProps({
-        isVisible: {
-            type: Boolean,
+        menuItems: {
+            type: Array,
+            required: true,
+        },
+        mousePosition: {
+            type: Object,
             required: true
         }
-    });
-
-    const overlayRef = ref();
-    const isVisible = ref(false);
-
-    watch(props, () => {
-        isVisible.value = props.isVisible;
-    }, {deep: true})
+    })
+    const contextMenuRef = ref();
 
     onMounted(() => {
-        document.addEventListener("mousemove", (event) => {
-            if (!props.isVisible) {
-                overlayRef.value.style.top = (event.clientY - 20) + "px";
-                overlayRef.value.style.left = (event.clientX - 20) + "px";
-            }
-        })
+        contextMenuRef.value.style.top = props.mousePosition.y + "px";
+        contextMenuRef.value.style.left = props.mousePosition.x + "px";
     })
-</script>
-
-<style lang="scss" scoped>
-    div.overlay-wrapper {
-        position: absolute;
-        width: 4rem;
-        height: 4rem;
-        background-color: antiquewhite;
-    }
-</style>
+  </script>
+  
+  <style lang="scss" scoped>
+  .context-menu {
+    position: absolute;
+    background-color: #F1F1F1;
+    border: 1px solid #CBCBCB;
+    width: fit-content;
+    border-radius: 0.6rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  </style>

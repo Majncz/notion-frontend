@@ -1,15 +1,17 @@
 <template>
     <div>
         <button :class="{hidden: !props.buttonsVisible}" @contextmenu.prevent="$emit('buttonclick')" @click="$emit('buttonclick')">
-            <img src="@/assets/icons/dots-horizontal.svg" alt="">
+            <Icon :imageName="'dots-horizontal'" />
         </button>
         <button @click="$emit('newblock', '')" :class="{hidden: !props.buttonsVisible}" @contextmenu.prevent="$emit('buttonclick')">
-            <img  src="@/assets/icons/plus.svg" alt="">
+            <Icon :imageName="'plus'" />
         </button>
     </div>
 </template>
 
 <script setup>
+    import Icon from "@/components/Icon.vue"
+
     const props = defineProps({
         buttonsVisible: {
             type: Boolean,
@@ -34,12 +36,6 @@
 
             &:hover {
                 cursor: pointer;
-            }
-
-            img {
-                width: 1.75rem;
-                height: 1.75rem;
-                filter: invert(67%) sepia(5%) saturate(96%) hue-rotate(317deg) brightness(78%) contrast(81%);
             }
         }
     }
