@@ -2,7 +2,7 @@
     <div class="menu-wrapper" ref="thisMenu" v-show="props.isVisible">
         <ContextButton v-for="(item, i) in props.data" @click="buttonHover(i, true)">{{ item.content }}</ContextButton>
     </div>
-    <div>
+    <div v-if="subMenusVisible">
         <ContextMenu v-for="(item, i) in getSubItems()" :data="item.subItems" 
         :previousRight="thisMenuRight"
         :isVisible="item.subItemsVisible" />
@@ -33,6 +33,7 @@
     const thisMenu = ref();
     const data = ref(props.data);
     const thisMenuRight = ref();
+    const subMenusVisible = ref(false);
 
     function buttonHover(index, state) {
         if (data.value[index].subItemsVisible == undefined) return;
@@ -63,7 +64,7 @@
         thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
         thisMenu.value.style.left = (props.previousRight - 20) + "px";
         thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
-        console.log("hej")
+        subMenusVisible.value = true;
     })
 </script>
 

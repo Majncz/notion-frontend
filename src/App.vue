@@ -190,7 +190,7 @@
       @newblock="(value) => Page.newBlock(blockKey, value)"
       @showcontext="contextVisible = true" />
   </div>
-  <ContextMenu :data="contextData" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" />
+  <ContextMenu :data="JSON.parse(JSON.stringify(contextData))" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" />
 </template>
 
 <style lang="scss" scoped>
