@@ -182,7 +182,7 @@
 </script>
 
 <template>
-  <div class="page-wrapper" v-if="areDataLoaded">
+  <div class="page-wrapper" v-if="areDataLoaded" @mouseover="contextVisible = false">
     <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
     <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
       :data="Page.getBlockData(blockKey)"
@@ -190,7 +190,7 @@
       @newblock="(value) => Page.newBlock(blockKey, value)"
       @showcontext="contextVisible = true" />
   </div>
-  <ContextMenu :data="contextData" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" @mouseleave="contextVisible = false" />
+  <ContextMenu :data="contextData" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" />
 </template>
 
 <style lang="scss" scoped>

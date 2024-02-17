@@ -1,11 +1,13 @@
 <template>
-    <div class="menu-wrapper" ref="thisMenu" v-show="props.isVisible" @mouseover="" @mouseleave="">
+    <div class="menu-wrapper" ref="thisMenu" v-show="props.isVisible">
         <ContextButton v-for="(item, i) in props.data" @click="buttonHover(i, true)">{{ item.content }}</ContextButton>
     </div>
-    <ContextMenu v-for="(item, i) in getSubItems()" :data="item.subItems" 
-        @mouseover="() => console.log('hej2')"
+    <div>
+        <ContextMenu v-for="(item, i) in getSubItems()" :data="item.subItems" 
         :previousRight="thisMenuRight"
-        :isVisible="item.subItemsVisible" /> 
+        :isVisible="item.subItemsVisible" />
+    </div>
+     
 </template>
 
 <script setup>
@@ -31,18 +33,6 @@
     const thisMenu = ref();
     const data = ref(props.data);
     const thisMenuRight = ref();
-
-    const emits = defineEmits(["mouseleave", "mouseover", "click"]);
-
-    function mouseOverAndLeaveEmit() {
-        if (thisMenu.value.getBoundingClientRect().top < appInstance.appContext.config.globalProperties.mousePosition.y &&
-            thisMenu.value.getBoundingClientRect().bottom > appInstance.appContext.config.globalProperties.mousePosition.y &&
-            thisMenu.value.getBoundingClientRect().left < appInstance.appContext.config.globalProperties.mousePosition.x &&
-            thisMenu.value.getBoundingClientRect().right > appInstance.appContext.config.globalProperties.mousePosition.x) {
-                console.log("hej")
-            emits("mouseover");
-        } else emits("mouseleave");
-    }
 
     function buttonHover(index, state) {
         if (data.value[index].subItemsVisible == undefined) return;
@@ -73,6 +63,7 @@
         thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
         thisMenu.value.style.left = (props.previousRight - 20) + "px";
         thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
+        console.log("hej")
     })
 </script>
 
