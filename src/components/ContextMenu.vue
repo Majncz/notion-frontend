@@ -1,47 +1,107 @@
 <template>
-    <div class="context-menu" ref="contextMenuRef">
-      <ContextMenuButton
-        v-for="(item, index) in props.menuItems"
-        :key="index"
-        :content="item.content"
-        :subItems="item.subItems"
-        :firstLayer="true"
-      ></ContextMenuButton>
+    <div class="menu-wrapper" ref="thisMenu" v-show="props.isVisible" @mouseover="" @mouseleave="">
+        <ContextButton v-for="(item, i) in props.data" @click="buttonHover(i, true)">{{ item.content }}</ContextButton>
     </div>
-  </template>
-  
-  <script setup>
-    import { onMounted, ref, watch } from 'vue';
-    import ContextMenuButton from './ContextMenuButton.vue';
-  
+    <ContextMenu v-for="(item, i) in getSubItems()" :data="item.subItems" 
+        @mouseover="() => console.log('hej2')"
+        :previousRight="thisMenuRight"
+        :isVisible="item.subItemsVisible" /> 
+</template>
+
+<script setup>
+    import { watch, ref, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, getCurrentInstance } from 'vue';
+    import ContextButton from './ContextButton.vue';
+
     const props = defineProps({
-        menuItems: {
+        data: {
             type: Array,
-            required: true,
-        },
-        mousePosition: {
-            type: Object,
             required: true
+        },
+        previousRight: {
+            type: Number,
+            required: true
+        },
+        isVisible: {
+            type: Boolean,
+            default: true
         }
     })
-    const contextMenuRef = ref();
+
+    const appInstance = getCurrentInstance();
+    const thisMenu = ref();
+    const data = ref(props.data);
+    const thisMenuRight = ref();
+
+    const emits = defineEmits(["mouseleave", "mouseover", "click"]);
+
+    function mouseOverAndLeaveEmit() {
+        if (thisMenu.value.getBoundingClientRect().top < appInstance.appContext.config.globalProperties.mousePosition.y &&
+            thisMenu.value.getBoundingClientRect().bottom > appInstance.appContext.config.globalProperties.mousePosition.y &&
+            thisMenu.value.getBoundingClientRect().left < appInstance.appContext.config.globalProperties.mousePosition.x &&
+            thisMenu.value.getBoundingClientRect().right > appInstance.appContext.config.globalProperties.mousePosition.x) {
+                console.log("hej")
+            emits("mouseover");
+        } else emits("mouseleave");
+    }
+
+    function buttonHover(index, state) {
+        if (data.value[index].subItemsVisible == undefined) return;
+        data.value[index].subItemsVisible = state;
+    }
+
+    function getSubItems() {
+        return data.value.filter((value) => value.subItemsVisible == true)
+    }
+
+    watch(() => props.isVisible, () => {
+        thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
+    })
+
+    function changePosition() {
+        if (props.isVisible) return;
+        thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
+        thisMenu.value.style.left = (props.previousRight - 20) + "px";
+    }
+
+    document.addEventListener("mousemove", changePosition);
+
+    onBeforeUnmount(() => {
+        document.removeEventListener("mousemove", changePosition);
+    })
 
     onMounted(() => {
-        contextMenuRef.value.style.top = props.mousePosition.y + "px";
-        contextMenuRef.value.style.left = props.mousePosition.x + "px";
+        thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
+        thisMenu.value.style.left = (props.previousRight - 20) + "px";
+        thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
     })
-  </script>
-  
-  <style lang="scss" scoped>
-  .context-menu {
-    position: absolute;
-    background-color: #F1F1F1;
-    border: 1px solid #CBCBCB;
-    width: fit-content;
-    border-radius: 0.6rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  </style>
+</script>
+
+<style lang="scss" scoped>
+    div.menu-wrapper {
+        border-radius: 0.8rem;
+        border: 1px solid #CBCBCB;
+        background: #F1F1F1;
+        box-shadow: 0px 4px 12.6px 0px rgba(0, 0, 0, 0.25);
+
+        display: flex;
+        flex-direction: column;
+
+        position: absolute;
+        overflow: hidden;
+
+        button.context-button {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            &:first-child {
+                padding-top: 1rem;
+            }
+            &:last-child {
+                padding-bottom: 1rem;
+            }
+        }
+
+
+    }
+</style>

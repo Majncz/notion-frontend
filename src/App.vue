@@ -1,12 +1,15 @@
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
-  import { onBeforeMount, ref, onMounted, watch } from "vue"
+  import { onBeforeMount, ref, onMounted, watch, VueElement, getCurrentInstance } from "vue"
   import PageTitle from "@/components/page/PageTitle.vue";
   import PageBlock from "@/components/page/PageBlock.vue";
+  import ContextMenu from './components/ContextMenu.vue';
 
+  const appInstance = getCurrentInstance();
   const apiURL = "localhost:3000"
   const areDataLoaded = ref(false);
-  const mousePosition = ref({});
+  const contextData = ref([]);
+  const contextVisible = ref(false);
 
   class Page {
     static title = ref({});
@@ -134,26 +137,60 @@
     }
   });
 
-  // this is extremely unoptimalised, you don't to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
+  // this is extremely unoptimalised, you don't need to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
   watch(Page.blockList, () => {
     Page.postData();
   }, { deep: true })
 
   document.addEventListener("mousemove", (event) => {
-    mousePosition.value.y = event.clientY;
-    mousePosition.value.x = event.clientX;
+    appInstance.appContext.config.globalProperties.mousePosition.x = event.clientX;
+    appInstance.appContext.config.globalProperties.mousePosition.y = event.clientY;
   })
+
+  contextData.value = [
+        {
+          content: 'Option1',
+          subItemsVisible: false,
+          subItems: [
+            { 
+              content: 'Suboption1',
+              subItemsVisible: false,
+              subItems: [
+                { content: "Suboption1 Suboption1" },
+                { content: "Suboption1 Suboption2" }
+              ]
+            },
+            { content: 'Suboption2' },
+          ],
+        },
+        {
+          content: 'Option2',
+          subItemsVisible: false,
+          subItems: [
+            { 
+              content: 'Suboption1',
+              subItemsVisible: false,
+              subItems: [
+                { content: "Suboption1 Suboption1" },
+                { content: "Suboption1 Suboption2" }
+              ]
+            },
+            { content: 'Suboption2' },
+          ],
+        },
+    ]
 </script>
 
 <template>
   <div class="page-wrapper" v-if="areDataLoaded">
     <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
     <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
-      :mousePosition="mousePosition"
       :data="Page.getBlockData(blockKey)"
       @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
-      @newblock="(value) => Page.newBlock(blockKey, value)"/>
+      @newblock="(value) => Page.newBlock(blockKey, value)"
+      @showcontext="contextVisible = true" />
   </div>
+  <ContextMenu :data="contextData" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" @mouseleave="contextVisible = false" />
 </template>
 
 <style lang="scss" scoped>
