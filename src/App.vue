@@ -1,12 +1,28 @@
+<template>
+  <div class="page-wrapper" v-if="areDataLoaded">
+    <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
+    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
+      :data="Page.getBlockData(blockKey)"
+      @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
+      @newblock="(value) => Page.newBlock(blockKey, value)" />
+  </div>
+  <ContextMenu v-if="contextVisible" />
+</template>
+
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
-  import { onBeforeMount, ref, onMounted, watch } from "vue"
+  import { onBeforeMount, ref, onMounted, watch, VueElement, getCurrentInstance, computed } from "vue"
   import PageTitle from "@/components/page/PageTitle.vue";
   import PageBlock from "@/components/page/PageBlock.vue";
+  import ContextMenu from "@/components/ContextMenu.vue";
+  import { useContextStore } from "@/stores/context";
 
-  const apiURL = "localhost:3000"
+  const appInstance = getCurrentInstance();
+  const apiURL = "localhost:3001"
   const areDataLoaded = ref(false);
-  const mousePosition = ref({});
+  const contextStore = useContextStore();
+
+  const contextVisible = computed(() => contextStore.visible);
 
   class Page {
     static title = ref({});
@@ -134,27 +150,16 @@
     }
   });
 
-  // this is extremely unoptimalised, you don't to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
+  // this is extremely unoptimalised, you don't need to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
   watch(Page.blockList, () => {
     Page.postData();
   }, { deep: true })
 
   document.addEventListener("mousemove", (event) => {
-    mousePosition.value.y = event.clientY;
-    mousePosition.value.x = event.clientX;
+    appInstance.appContext.config.globalProperties.mousePosition.x = event.clientX;
+    appInstance.appContext.config.globalProperties.mousePosition.y = event.clientY;
   })
 </script>
-
-<template>
-  <div class="page-wrapper" v-if="areDataLoaded">
-    <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
-    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
-      :mousePosition="mousePosition"
-      :data="Page.getBlockData(blockKey)"
-      @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
-      @newblock="(value) => Page.newBlock(blockKey, value)"/>
-  </div>
-</template>
 
 <style lang="scss" scoped>
   div.page-wrapper {

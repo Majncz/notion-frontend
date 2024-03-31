@@ -1,47 +1,103 @@
 <template>
-    <div class="context-menu" ref="contextMenuRef">
-      <ContextMenuButton
-        v-for="(item, index) in props.menuItems"
-        :key="index"
-        :content="item.content"
-        :subItems="item.subItems"
-        :firstLayer="true"
-      ></ContextMenuButton>
+    <div class="context-menu" @click.self.prevent="contextStore.visible = false">
+        <div class="context-section" v-for="section in contextData.filter(section => section.visible)" 
+            :style="{
+                left: `${section.position ? section.position.x : mousePosition.x}px`, 
+                top: `${section.position ? section.position.y : mousePosition.y}px`
+            }"
+            @mouseleave="() => console.log('Mouse left')">
+            <button v-for="item in section.items" @click="changeChildVisibility(item.uuid, $event)">
+                <p>{{ item.text }}</p>
+                <img src="/chevron-right.svg" alt="chevron-right" v-if="contextData.map(section => section.parent).includes(item.uuid)">
+            </button>
+        </div>
     </div>
-  </template>
-  
-  <script setup>
-    import { onMounted, ref, watch } from 'vue';
-    import ContextMenuButton from './ContextMenuButton.vue';
-  
-    const props = defineProps({
-        menuItems: {
-            type: Array,
-            required: true,
-        },
-        mousePosition: {
-            type: Object,
-            required: true
-        }
-    })
-    const contextMenuRef = ref();
+</template>
 
-    onMounted(() => {
-        contextMenuRef.value.style.top = props.mousePosition.y + "px";
-        contextMenuRef.value.style.left = props.mousePosition.x + "px";
-    })
-  </script>
-  
-  <style lang="scss" scoped>
-  .context-menu {
-    position: absolute;
-    background-color: #F1F1F1;
-    border: 1px solid #CBCBCB;
-    width: fit-content;
-    border-radius: 0.6rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  </style>
+<script setup>
+
+    import { useContextStore } from '../stores/context'
+    import { ref, getCurrentInstance } from 'vue';
+
+    const contextStore = useContextStore();
+    const appInstance = getCurrentInstance();
+    const mousePosition = { ...appInstance.appContext.config.globalProperties.mousePosition };
+
+    const contextData = ref(contextStore.dropdownArray);
+
+    console.log(contextData.value);
+
+    function changeChildVisibility(uuid, event) {
+        let buttonRect = event.target.getBoundingClientRect();
+        if (event.target.tagName !== 'BUTTON') {
+            buttonRect = event.target.parentElement.getBoundingClientRect();
+        }
+        const newPosition = {
+            x: buttonRect.right, // Use `right` for the x position to align with the button's right edge
+            y: { ...appInstance.appContext.config.globalProperties.mousePosition }.y // Use `top` for the y position
+        };
+
+        contextData.value = contextData.value.map(section => {
+            if (section.parent === uuid) {
+                return { 
+                    ...section, 
+                    visible: !section.visible,
+                    position: newPosition
+                };
+            } else {
+                return section;
+            }
+        });
+    }
+</script>
+
+<style lang="scss" scoped>
+    div.context-menu {
+        position: fixed;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+
+        .context-section {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            background: #fdfdfd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+
+            button {
+                border: none;
+                background: none;
+                text-align: start;
+                padding: 0.5rem 0.9rem;
+                font-size: 1rem;
+                font-weight: 400;
+
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                &:first-child {
+                    padding-top: 0.8rem;
+                }
+
+                &:last-child {
+                    padding-bottom: 0.8rem;
+                }
+
+                &:hover {
+                    background: #f5f7fa;
+                }
+
+                img {
+                    width: 1rem;
+                    height: 1rem;
+                    margin-left: 2rem;
+                }
+            }
+        }
+    }
+</style>
+

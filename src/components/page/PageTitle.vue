@@ -32,8 +32,9 @@ div {
     flex-direction: column;
 
     h1 {
-        font-size: 5rem;
+        font-size: 4rem;
         font-weight: 700;
+        color: #32363c;
     }
 }
 </style>
