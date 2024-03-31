@@ -1,99 +1,103 @@
 <template>
-    <div class="menu-wrapper" ref="thisMenu" v-show="props.isVisible">
-        <ContextButton v-for="(item, i) in props.data" @click="buttonHover(i, true)">{{ item.content }}</ContextButton>
+    <div class="context-menu" @click.self.prevent="contextStore.visible = false">
+        <div class="context-section" v-for="section in contextData.filter(section => section.visible)" 
+            :style="{
+                left: `${section.position ? section.position.x : mousePosition.x}px`, 
+                top: `${section.position ? section.position.y : mousePosition.y}px`
+            }"
+            @mouseleave="() => console.log('Mouse left')">
+            <button v-for="item in section.items" @click="changeChildVisibility(item.uuid, $event)">
+                <p>{{ item.text }}</p>
+                <img src="/chevron-right.svg" alt="chevron-right" v-if="contextData.map(section => section.parent).includes(item.uuid)">
+            </button>
+        </div>
     </div>
-    <div v-if="subMenusVisible">
-        <ContextMenu v-for="(item, i) in getSubItems()" :data="item.subItems" 
-        :previousRight="thisMenuRight"
-        :isVisible="item.subItemsVisible" />
-    </div>
-     
 </template>
 
 <script setup>
-    import { watch, ref, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, getCurrentInstance } from 'vue';
-    import ContextButton from './ContextButton.vue';
 
-    const props = defineProps({
-        data: {
-            type: Array,
-            required: true
-        },
-        previousRight: {
-            type: Number,
-            required: true
-        },
-        isVisible: {
-            type: Boolean,
-            default: true
-        }
-    })
+    import { useContextStore } from '../stores/context'
+    import { ref, getCurrentInstance } from 'vue';
 
+    const contextStore = useContextStore();
     const appInstance = getCurrentInstance();
-    const thisMenu = ref();
-    const data = ref(props.data);
-    const thisMenuRight = ref();
-    const subMenusVisible = ref(false);
+    const mousePosition = { ...appInstance.appContext.config.globalProperties.mousePosition };
 
-    function buttonHover(index, state) {
-        if (data.value[index].subItemsVisible == undefined) return;
-        data.value[index].subItemsVisible = state;
+    const contextData = ref(contextStore.dropdownArray);
+
+    console.log(contextData.value);
+
+    function changeChildVisibility(uuid, event) {
+        let buttonRect = event.target.getBoundingClientRect();
+        if (event.target.tagName !== 'BUTTON') {
+            buttonRect = event.target.parentElement.getBoundingClientRect();
+        }
+        const newPosition = {
+            x: buttonRect.right, // Use `right` for the x position to align with the button's right edge
+            y: { ...appInstance.appContext.config.globalProperties.mousePosition }.y // Use `top` for the y position
+        };
+
+        contextData.value = contextData.value.map(section => {
+            if (section.parent === uuid) {
+                return { 
+                    ...section, 
+                    visible: !section.visible,
+                    position: newPosition
+                };
+            } else {
+                return section;
+            }
+        });
     }
-
-    function getSubItems() {
-        return data.value.filter((value) => value.subItemsVisible == true)
-    }
-
-    watch(() => props.isVisible, () => {
-        thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
-    })
-
-    function changePosition() {
-        if (props.isVisible) return;
-        thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
-        thisMenu.value.style.left = (props.previousRight - 20) + "px";
-    }
-
-    document.addEventListener("mousemove", changePosition);
-
-    onBeforeUnmount(() => {
-        document.removeEventListener("mousemove", changePosition);
-    })
-
-    onMounted(() => {
-        thisMenu.value.style.top = (appInstance.appContext.config.globalProperties.mousePosition.y - 20) + "px";
-        thisMenu.value.style.left = (props.previousRight - 20) + "px";
-        thisMenuRight.value = thisMenu.value.getBoundingClientRect().right;
-        subMenusVisible.value = true;
-    })
 </script>
 
 <style lang="scss" scoped>
-    div.menu-wrapper {
-        border-radius: 0.8rem;
-        border: 1px solid #CBCBCB;
-        background: #F1F1F1;
-        box-shadow: 0px 4px 12.6px 0px rgba(0, 0, 0, 0.25);
+    div.context-menu {
+        position: fixed;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
 
-        display: flex;
-        flex-direction: column;
+        .context-section {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            background: #fdfdfd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
 
-        position: absolute;
-        overflow: hidden;
+            button {
+                border: none;
+                background: none;
+                text-align: start;
+                padding: 0.5rem 0.9rem;
+                font-size: 1rem;
+                font-weight: 400;
 
-        button.context-button {
-            padding-left: 1rem;
-            padding-right: 1rem;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            &:first-child {
-                padding-top: 1rem;
-            }
-            &:last-child {
-                padding-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                &:first-child {
+                    padding-top: 0.8rem;
+                }
+
+                &:last-child {
+                    padding-bottom: 0.8rem;
+                }
+
+                &:hover {
+                    background: #f5f7fa;
+                }
+
+                img {
+                    width: 1rem;
+                    height: 1rem;
+                    margin-left: 2rem;
+                }
             }
         }
-
-
     }
 </style>
+

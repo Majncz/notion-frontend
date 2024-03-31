@@ -1,15 +1,28 @@
+<template>
+  <div class="page-wrapper" v-if="areDataLoaded">
+    <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
+    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
+      :data="Page.getBlockData(blockKey)"
+      @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
+      @newblock="(value) => Page.newBlock(blockKey, value)" />
+  </div>
+  <ContextMenu v-if="contextVisible" />
+</template>
+
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
-  import { onBeforeMount, ref, onMounted, watch, VueElement, getCurrentInstance } from "vue"
+  import { onBeforeMount, ref, onMounted, watch, VueElement, getCurrentInstance, computed } from "vue"
   import PageTitle from "@/components/page/PageTitle.vue";
   import PageBlock from "@/components/page/PageBlock.vue";
-  import ContextMenu from './components/ContextMenu.vue';
+  import ContextMenu from "@/components/ContextMenu.vue";
+  import { useContextStore } from "@/stores/context";
 
   const appInstance = getCurrentInstance();
-  const apiURL = "localhost:3000"
+  const apiURL = "localhost:3001"
   const areDataLoaded = ref(false);
-  const contextData = ref([]);
-  const contextVisible = ref(false);
+  const contextStore = useContextStore();
+
+  const contextVisible = computed(() => contextStore.visible);
 
   class Page {
     static title = ref({});
@@ -146,52 +159,7 @@
     appInstance.appContext.config.globalProperties.mousePosition.x = event.clientX;
     appInstance.appContext.config.globalProperties.mousePosition.y = event.clientY;
   })
-
-  contextData.value = [
-        {
-          content: 'Option1',
-          subItemsVisible: false,
-          subItems: [
-            { 
-              content: 'Suboption1',
-              subItemsVisible: false,
-              subItems: [
-                { content: "Suboption1 Suboption1" },
-                { content: "Suboption1 Suboption2" }
-              ]
-            },
-            { content: 'Suboption2' },
-          ],
-        },
-        {
-          content: 'Option2',
-          subItemsVisible: false,
-          subItems: [
-            { 
-              content: 'Suboption1',
-              subItemsVisible: false,
-              subItems: [
-                { content: "Suboption1 Suboption1" },
-                { content: "Suboption1 Suboption2" }
-              ]
-            },
-            { content: 'Suboption2' },
-          ],
-        },
-    ]
 </script>
-
-<template>
-  <div class="page-wrapper" v-if="areDataLoaded" @mouseover="contextVisible = false">
-    <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
-    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
-      :data="Page.getBlockData(blockKey)"
-      @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
-      @newblock="(value) => Page.newBlock(blockKey, value)"
-      @showcontext="contextVisible = true" />
-  </div>
-  <ContextMenu :data="JSON.parse(JSON.stringify(contextData))" :previousRight="appInstance.appContext.config.globalProperties.mousePosition.x" v-if="contextVisible" />
-</template>
 
 <style lang="scss" scoped>
   div.page-wrapper {
