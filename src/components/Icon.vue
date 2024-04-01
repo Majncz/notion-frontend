@@ -21,8 +21,8 @@
 
 <style lang="scss" scoped>
     img {
-        width: 1.75rem;
-        height: 1.75rem;
+        width: 1.5rem;
+        height: 1.5rem;
         filter: invert(67%) sepia(5%) saturate(96%) hue-rotate(317deg) brightness(78%) contrast(81%);
     }
 </style>
