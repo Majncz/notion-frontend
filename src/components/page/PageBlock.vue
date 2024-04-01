@@ -30,6 +30,7 @@
         padding-right: 5.5rem;
         width: 100%;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
     }
 </style>
+
