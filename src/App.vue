@@ -16,127 +16,19 @@
   import PageBlock from "@/components/page/PageBlock.vue";
   import ContextMenu from "@/components/ContextMenu.vue";
   import { useContextStore } from "@/stores/context";
+  import Page from "@/modules/Page.js";
+  import { useGlobalStore } from "@/stores/global.js";
 
   const appInstance = getCurrentInstance();
-  const apiURL = "localhost:3001"
+  const globalStore = useGlobalStore();
   const areDataLoaded = ref(false);
   const contextStore = useContextStore();
 
   const contextVisible = computed(() => contextStore.visible);
 
-  class Page {
-    static title = ref({});
-    static blockList = ref([]);
-
-    constructor(data) { 
-      for (const value of Object.keys(data)) {
-        if (data[value].type == "title") {
-          Page.title.value = data[value];
-          Page.title.value.id = value;
-        } else {
-          Page.blockList.value.push(new Block(data[value], value));
-        }
-      }
-    }
-
-    static getBlockKeys() {
-      let keys = [];
-      Page.blockList.value.forEach((value) => {
-        keys.push(value.id);
-      })
-      return keys;
-    }
-
-    static changeTitle(newTitle) {
-      Page.title.value.content = newTitle;
-      Page.postData();
-    }
-
-    static postData() {
-      let data = {};
-      data[Page.title.value.id] = Page.title.value;
-      data[Page.title.value.id].id = undefined;
-
-      Page.blockList.value.forEach((value) => {
-        data[value.id] = value.exportDatabase();
-      })
-
-      fetch(`http://${apiURL}/page`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({value: data})
-      })
-        .catch((error) => {
-            console.error('Error:', error); // Handle errors
-        });
-    }
-
-    static getBlockByID(id) {
-      for (const block of Page.blockList.value) {
-        if (block.id == id) return block;
-      }
-    }
-
-    static getBlockData(id) {
-      const block = Page.getBlockByID(id);
-      return block.export();
-    }
-
-    static blockContentChange(newContent, id) {
-      Page.getBlockByID(id).content = newContent;
-    }
-
-    static newBlock(previousBlockID, oldContent) {
-      const previousBlock = Page.getBlockByID(previousBlockID);
-      let newBlock = new Block(previousBlock.export(), crypto.randomUUID());
-      newBlock.content = oldContent;
-      newBlock.newlyCreated = true;
-      const newBlockIndex = Page.blockList.value.findIndex((value) => value.id == previousBlock.id) + 1;
-      Page.blockList.value = [
-        ...Page.blockList.value.slice(0, newBlockIndex),
-        newBlock,
-        ...Page.blockList.value.slice(newBlockIndex)
-      ]
-    }
-  }
-
-  class Block {
-    type;
-    content;
-    textType;
-    id;
-    newlyCreated = false; // true/false - it is just to set the cursor to the new block after it is created - it is not stored in database
-
-    constructor(block, id) {
-      this.type = block.type;
-      this.content = block.content;
-      this.textType = block.textType;
-      this.id = id;
-    }
-
-    export() {
-      return {
-        type: this.type,
-        content: this.content,
-        textType: this.textType,
-        newlyCreated: this.newlyCreated
-      }
-    }
-
-    exportDatabase() {
-      return {
-        type: this.type,
-        content: this.content,
-        textType: this.textType
-      }
-    }
-  }
-
   onMounted(async () => {
     try {
-      const response = await fetch(`http://${apiURL}/page`, {
+      const response = await fetch(`http://${globalStore.apiUrl}/page`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
