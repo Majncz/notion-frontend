@@ -1,10 +1,10 @@
 <template>
   <div class="page-wrapper" v-if="areDataLoaded">
-    <PageTitle :data="Page.title.value.content" @titlechange="Page.changeTitle"/>
-    <PageBlock v-for="blockKey in Page.getBlockKeys()" :key="blockKey" 
-      :data="Page.getBlockData(blockKey)"
-      @contentchange="(data) => Page.blockContentChange(data, blockKey)" 
-      @newblock="(value) => Page.newBlock(blockKey, value)" />
+    <PageTitle :data="page.title" @titlechange="page.changeTitle"/>
+    <PageBlock v-for="blockKey in page.getBlockKeys()" :key="blockKey" 
+      :data="page.getBlockData(blockKey)"
+      @contentchange="(data) => page.blockContentChange(data, blockKey)" 
+      @newblock="(value) => page.newBlock(blockKey, value)" />
   </div>
   <ContextMenu v-if="contextVisible" />
 </template>
@@ -26,6 +26,12 @@
 
   const contextVisible = computed(() => contextStore.visible);
 
+  let page = new Page({
+    title: "",
+    id: "ejsgs",
+    blocks: {}
+});
+
   onMounted(async () => {
     try {
       const response = await fetch(`http://${globalStore.apiUrl}/page`, {
@@ -35,16 +41,16 @@
         },
       });
       const data = await response.json();
-      new Page(data); // Update state here that your component depends on
+      page = new Page(data); // Update state here that your component depends on
       areDataLoaded.value = true;
     } catch (error) {
       console.error('Error:', error);
     }
   });
 
-  // this is extremely unoptimalised, you don't need to send the whole page data, we just need to send the specific change, put that will be done later when the database is ready
-  watch(Page.blockList, () => {
-    Page.postData();
+  // this is extremely unoptimalised, you don't need to send the whole page data, we just need to send the specific change, but that will be done later when the database is ready
+  watch(page.blockList, () => {
+    page.postData();
   }, { deep: true })
 
   document.addEventListener("mousemove", (event) => {

@@ -1,5 +1,5 @@
 <template>
-    <textarea :class="data.textType" ref="textareaRef" v-model="content" @keydown="event => preventEnter(event)"></textarea>
+    <textarea :class="data.type" ref="textareaRef" v-model="content" @keydown="event => preventEnter(event)"></textarea>
 </template>
 
 <script setup>
@@ -58,13 +58,13 @@
         outline: none;
         resize: none;
     }
-    .normal {
+    .text {
         font-size: 1.3rem;
-        font-weight: 500;
+        font-weight: 400;
     }
 
-    .header1 {
-        font-size: 3.2rem;
+    .title {
+        font-size: 3rem;
         font-weight: 700;
     }
 </style>

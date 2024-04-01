@@ -8,7 +8,6 @@ export default class Block {
     constructor(block, id) {
       this.type = block.type;
       this.content = block.content;
-      this.textType = block.textType;
       this.id = id;
     }
 
