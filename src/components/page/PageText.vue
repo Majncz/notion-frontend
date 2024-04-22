@@ -1,5 +1,5 @@
 <template>
-    <textarea :class="data.type" ref="textareaRef" v-model="content" @keydown="event => preventEnter(event)"></textarea>
+    <textarea :class="props.data.textType.toLowerCase()" ref="textareaRef" v-model="content" @keydown="event => preventEnter(event)"></textarea>
 </template>
 
 <script setup>
@@ -63,7 +63,7 @@
         font-weight: 400;
     }
 
-    .title {
+    .h1 {
         font-size: 3rem;
         font-weight: 700;
     }

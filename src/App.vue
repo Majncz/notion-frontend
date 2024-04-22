@@ -29,12 +29,12 @@
   let page = new Page({
     title: "",
     id: "ejsgs",
-    blocks: {}
-});
+    blocks: []
+  });
 
   onMounted(async () => {
     try {
-      const response = await fetch(`http://${globalStore.apiUrl}/page`, {
+      const response = await fetch(`http://${globalStore.apiUrl}/fotion/page/zsrigbir`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -2,7 +2,7 @@
     <div class="block-wrapper" @mouseover="buttonsVisible = true"
         @mouseleave="buttonsVisible = false">
         <PageBlockButtons :buttonsVisible="buttonsVisible" @newblock="(value) => $emit('newblock', value)" @buttonclick="$emit('showcontext')" />
-        <PageText v-if="data.type == 'text' || data.type == 'title'" :data="data" 
+        <PageText v-if="data.type == 'TEXT'" :data="data" 
             @contentchange="(data) => $emit('contentchange', data)" 
             @newblock="(value) => $emit('newblock', value)"/>
     </div>

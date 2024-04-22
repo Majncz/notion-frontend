@@ -65,3 +65,15 @@ https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
 https://vuejs.org/guide/essentials/reactivity-fundamentals
 https://marketsplash.com/tutorials/vue-js/vue-js-global-variable/
 https://www.youtube.com/watch?v=ofQbziYrP9w&ab_channel=ChrisDixon
+https://vueuse.org/core/useTextareaAutosize/
+https://github.com/vueuse/vueuse/blob/main/packages/core/useTextareaAutosize/index.ts
+https://github.com/vueuse/vueuse/blob/main/packages/core/useTextareaAutosize/demo.vue
+https://github.com/vueuse/vueuse/issues?q=is:issue+is:open+textarea
+https://vueuse.org/core/onClickOutside/
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+https://www.vuescript.com/minimal-multi-level-dropdown-component-for-vue/
+https://github.com/borisbutenko/bp-vuejs-dropdown/blob/master/Dropdown.vue
+https://codesandbox.io/p/sandbox/vue-dock-menu-nxbum?file=/src/App.vue&fontsize=14&hidenavigation=1&theme=dark
+https://www.vuescript.com/multi-level-dock-menu/
+https://chat.openai.com/share/ecab3d76-53b7-4671-ad41-bbebaa4d4aea
+https://chat.openai.com/share/58af68d9-a883-464f-a4e3-19e261ab894d
