@@ -3,13 +3,13 @@ export default class Block {
   content;
   textType;
   id;
-  newlyCreated = false; // true/false - it is just to set the cursor to the new block after it is created - it is not stored in database
+  newlyCreated = false; // it is just to set the cursor to the new block after it is created - it is not stored in a database
 
-  constructor(block, id) {
+  constructor(block) {
     this.type = block.type;
     this.content = block.content;
-    this.id = id;
-    this.textType = block.textType;
+    this.id = block.id;
+    this.textType = block.text_type;
   }
 
   export() {

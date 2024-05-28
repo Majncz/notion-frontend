@@ -1,70 +1,74 @@
 <template>
-    <textarea :class="props.data.textType.toLowerCase()" ref="textareaRef" v-model="content" @keydown="event => preventEnter(event)"></textarea>
+    <textarea :class="props.data.textType.toLowerCase()" ref="textareaRef" v-model="content"
+        @keydown="event => preventEnter(event)"></textarea>
 </template>
 
 <script setup>
-    import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
-    const props = defineProps({
-        data: {
-            type: Object,
-            required: true
-        }
-    });
+const props = defineProps({
+    data: {
+        type: Object,
+        required: true
+    }
+});
 
-    const emit = defineEmits(['contentchange', "newblock"]);
+console.log(props.data);
 
-    const textareaRef = ref(null);
-    const content = ref("");
+const emit = defineEmits(['contentchange', "newblock"]);
 
-    onMounted(() => {
-        content.value = props.data.content;
-        setTimeout(() => {
-            textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
-        }, 100);
-        if (props.data.newlyCreated == true) textareaRef.value.focus();
-    });
+const textareaRef = ref(null);
+const content = ref("");
 
-    watch(content, () => {
+onMounted(() => {
+    content.value = props.data.content;
+    setTimeout(() => {
         textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
-        emit('contentchange', content.value);
-    })
+    }, 100);
+    if (props.data.newlyCreated == true) textareaRef.value.focus();
+});
 
-    function logCharsAfterCaret() {
-        const textarea = textareaRef.value;
-        if (!textarea) return { before: '', after: '' };
-        const caretPos = textarea.selectionStart;
-        const textBeforeCaret = textarea.value.substring(0, caretPos);
-        const textAfterCaret = textarea.value.substring(caretPos);
-        return { before: textBeforeCaret, after: textAfterCaret };
+watch(content, () => {
+    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+    emit('contentchange', content.value);
+})
+
+function logCharsAfterCaret() {
+    const textarea = textareaRef.value;
+    if (!textarea) return { before: '', after: '' };
+    const caretPos = textarea.selectionStart;
+    const textBeforeCaret = textarea.value.substring(0, caretPos);
+    const textAfterCaret = textarea.value.substring(caretPos);
+    return { before: textBeforeCaret, after: textAfterCaret };
+}
+
+function preventEnter(event) {
+    if (event.keyCode === 13 && !event.shiftKey) {
+        event.preventDefault();
+        const caretContent = logCharsAfterCaret();
+        console.log(caretContent);
+
+        content.value = caretContent.before;
+        emit("newblock", caretContent.after);
     }
-
-    function preventEnter(event) {
-        if (event.keyCode === 13 && !event.shiftKey) {
-            event.preventDefault();
-            const caretContent = logCharsAfterCaret();
-            console.log(caretContent);
-
-            content.value = caretContent.before;
-            emit("newblock", caretContent.after);
-        }
-    }
+}
 </script>
 
 <style lang="scss" scoped>
-    textarea {
-        width: 100%;
-        border: none;
-        outline: none;
-        resize: none;
-    }
-    .text {
-        font-size: 1.3rem;
-        font-weight: 400;
-    }
+textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+}
 
-    .h1 {
-        font-size: 3rem;
-        font-weight: 700;
-    }
+.p {
+    font-size: 1.3rem;
+    font-weight: 400;
+}
+
+.h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
 </style>

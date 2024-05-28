@@ -1,55 +1,40 @@
 import Block from "@/modules/Block.js";
 import { ref } from "vue";
-import { useGlobalStore } from "@/stores/global.js";
+import { useSocketStore } from "@/stores/socket.js";
 
 export default class Page {
-  title = ref("");
-  blockList = ref([]);
+  title = "";
+  blockList = [];
+  id;
 
   constructor(data) {
     this.title = data.title;
-    console.log(data.blocks)
+    this.id = data.id;
     data.blocks.forEach(block => {
-      this.blockList.value.push(new Block(block, block.id));
+      this.blockList.push(new Block(block));
     });
   }
 
   getBlockKeys() {
     let keys = [];
-    this.blockList.value.forEach((value) => {
+    this.blockList.forEach((value) => {
       keys.push(value.id);
     })
     return keys;
   }
 
   changeTitle(newTitle) {
-    this.title.value.content = newTitle;
-    this.postData();
-  }
-
-  postData() {
-    let data = {};
-    data[this.title.value.id] = this.title.value;
-    data[this.title.value.id].id = undefined;
-
-    this.blockList.value.forEach((value) => {
-      data[value.id] = value.exportDatabase();
-    })
-
-    fetch(`http://${useGlobalStore().apiUrl}/page`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ value: data })
-    })
-      .catch((error) => {
-        console.error('Error:', error); // Handle errors
-      });
+    this.title = newTitle;
+    useSocketStore().socket.emit("pageChange", {
+      item: "title",
+      content: newTitle,
+      pageId: this.id,
+      date: new Date().getTime() // date to indentify which change is newer if someones internet is bad
+    });
   }
 
   getBlockByID(id) {
-    for (const block of this.blockList.value) {
+    for (const block of this.blockList) {
       if (block.id == id) return block;
     }
   }

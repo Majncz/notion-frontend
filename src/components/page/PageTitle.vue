@@ -5,20 +5,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { usePageManagerStore } from "@/stores/pageManager.js";
+
+const pageManagerStore = usePageManagerStore();
 
 const props = defineProps({
     data: {
         type: String,
         required: true
+    },
+    pageId: {
+        type: String,
+        required: true
     }
 });
 
-const emit = defineEmits(['titlechange']);
-
 function handleInput(event) {
-    const updatedTitle = event.target.innerText;
-    emit('titlechange', updatedTitle);
+    pageManagerStore.getPageById(props.pageId).changeTitle(event.target.innerText);
 }
 </script>
 
