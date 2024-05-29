@@ -1,27 +1,41 @@
 <template>
     <div class="block-wrapper" @mouseover="buttonsVisible = true" @mouseleave="buttonsVisible = false">
-        <PageBlockButtons :buttonsVisible="buttonsVisible" @newblock="(value) => $emit('newblock', value)"
-            @buttonclick="$emit('showcontext')" />
-        <PageText v-if="data.type == 'TEXT'" :data="data" @contentchange="(data) => $emit('contentchange', data)"
-            @newblock="(value) => $emit('newblock', value)" />
+        <PageBlockButtons :buttonsVisible="buttonsVisible" />
+        <PageText v-if="page.getBlockById(props.blockId).type == 'TEXT'" v-model="block"
+            @contentchange="(data) => { page.contentChange(data, props.blockId); console.log('CONTENT CHANGE') }" />
     </div>
 </template>
 
 <script setup>
 import PageText from "@/components/page/PageText.vue";
 import PageBlockButtons from "@/components/page/PageBlockButtons.vue"
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
+import { usePageManagerStore } from "@/stores/pageManager.js";
 
 const props = defineProps({
-    data: {
-        type: Object,
+    blockId: {
+        type: String,
         required: true
     }
 });
 
+const page = defineModel({
+    type: Object,
+    required: true
+});
+
+const block = ref(page.value.getBlockById(props.blockId));
+
 const buttonsVisible = ref(false);
 
-const emit = defineEmits(['contentchange', "newblock", "showcontext"]);
+watch(() => page, (newVal) => {
+    console.log("PAGE CHANGED");
+    block.value = page.value.getBlockById(props.blockId);
+    console.log(block.value);
+}, { deep: true })
+
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -30,5 +44,6 @@ div.block-wrapper {
     width: 100%;
     display: flex;
     align-items: flex-start;
+    order: v-bind("block.order");
 }
 </style>

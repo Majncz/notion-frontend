@@ -3,6 +3,7 @@ export default class Block {
   content;
   textType;
   id;
+  order;
   newlyCreated = false; // it is just to set the cursor to the new block after it is created - it is not stored in a database
 
   constructor(block) {
@@ -10,6 +11,7 @@ export default class Block {
     this.content = block.content;
     this.id = block.id;
     this.textType = block.text_type;
+    this.order = block.order;
   }
 
   export() {

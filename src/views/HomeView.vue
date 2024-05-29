@@ -1,9 +1,9 @@
 <template>
     <div class="page-wrapper" v-if="areDataLoaded">
         <PageTitle :data="page.title" :pageId="page.id" />
-        <PageBlock v-for="blockKey in page.getBlockKeys()" :key="blockKey" :data="page.getBlockData(blockKey)"
-            @contentchange="(data) => page.blockContentChange(data, blockKey)"
-            @newblock="(value) => page.newBlock(blockKey, value)" />
+        <section class="page-blocks">
+            <PageBlock v-for="block in page.blockList" :key="block.id" :blockId="block.id" v-model="page" />
+        </section>
     </div>
     <ContextMenu v-if="contextVisible" />
 </template>
@@ -16,7 +16,9 @@ import ContextMenu from "@/components/ContextMenu.vue";
 import { useContextStore } from "@/stores/context";
 import { useGlobalStore } from "@/stores/global.js";
 import { usePageManagerStore } from "@/stores/pageManager.js";
+import { useSocketStore } from "@/stores/socket.js";
 
+useSocketStore();
 
 const appInstance = getCurrentInstance();
 const globalStore = useGlobalStore();
@@ -26,13 +28,16 @@ const pageManagerStore = usePageManagerStore();
 
 const contextVisible = computed(() => contextStore.visible);
 
-let page = pageManagerStore.pages[0];
+const page = ref(null);
 
-watch(() => pageManagerStore.pages[0], () => {
-    page = pageManagerStore.pages[0];
-    console.log("page changed: ", page);
+watch(() => pageManagerStore.pages, () => {
+    page.value = pageManagerStore.pages[0];
     areDataLoaded.value = true;
 }, { deep: true })
+
+watch(page, (newVal) => {
+    console.log("LALALALA ", newVal);
+}, { deep: true });
 
 document.addEventListener("mousemove", (event) => {
     appInstance.appContext.config.globalProperties.mousePosition.x = event.clientX;
@@ -48,6 +53,12 @@ div.page-wrapper {
 
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
+
+    section.page-blocks {
+        display: flex;
+        flex-direction: column;
+        gap: 0rem;
+    }
 }
 </style>

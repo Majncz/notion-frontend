@@ -1,37 +1,44 @@
 <template>
-    <textarea :class="props.data.textType.toLowerCase()" ref="textareaRef" v-model="content"
+    <textarea :class="block.textType.toLowerCase()" ref="textareaRef" v-model="content"
         @keydown="event => preventEnter(event)"></textarea>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 
-const props = defineProps({
-    data: {
-        type: Object,
-        required: true
-    }
+const block = defineModel({
+    type: Object,
+    required: true
 });
-
-console.log(props.data);
 
 const emit = defineEmits(['contentchange', "newblock"]);
 
 const textareaRef = ref(null);
-const content = ref("");
+const content = ref(block.value.content); // this may seem unnecessary as it seemingly provides the same purpose as `block.value.content`, but it's here to prevent multiple clients from going into an infinite loop of sending each other's changes that were NOT made by the user but recieved by websocket
 
 onMounted(() => {
-    content.value = props.data.content;
     setTimeout(() => {
         textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
     }, 100);
-    if (props.data.newlyCreated == true) textareaRef.value.focus();
+    if (block.newlyCreated == true) textareaRef.value.focus();
 });
 
-watch(content, () => {
+watch(() => block.value.content, () => {
+    content.value = block.value.content;
+});
+
+watch(() => content.value, () => {
+    console.log("JA UZ NEVIM", textareaRef.value.scrollHeight);
+    textareaRef.value.style.height = "1rem";
     textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+    if (content.value == block.value.content) return; // part of the issue of websocket infinite loop described above
     emit('contentchange', content.value);
-})
+}, { deep: true });
+
+// setInterval(() => {
+//     console.log("idk", textareaRef.value.scrollHeight);
+//     textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+// }, 1000);
 
 function logCharsAfterCaret() {
     const textarea = textareaRef.value;
@@ -60,6 +67,8 @@ textarea {
     border: none;
     outline: none;
     resize: none;
+    overflow-y: scroll;
+    height: 1rem;
 }
 
 .p {

@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import Page from "@/modules/Page.js";
@@ -16,9 +16,7 @@ export const usePageManagerStore = defineStore("pageManager", () => {
         console.log("pages: ", pages.value);
     })();
 
-    function getPageById(id) {
-        return pages.value.find((page) => page.id === id);
-    }
+    const getPageById = computed(() => (id) => pages.value.find((page) => page.id === id));
 
     return {
         pages,
