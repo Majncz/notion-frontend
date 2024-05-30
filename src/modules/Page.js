@@ -41,5 +41,26 @@ export default class Page {
       if (block.id == id) return block;
     }
   }
+
+  newBlock(currentBlockOrder) {
+    const newBlock = new Block({ order: currentBlockOrder + 1 });
+    console.log("blockList", this);
+    this.blockList.splice(currentBlockOrder + 1, 0, newBlock);
+    useSocketStore().socket.emit("pageChange", {
+      item: "newBlock",
+      pageId: this.id,
+      blockId: newBlock.id,
+      order: newBlock.order,
+      date: new Date().getTime()
+    });
+  }
+
+  // from socket.io
+  pushBlock(data) {
+    this.blockList.push(new Block({ order: data.order, id: data.blockId }));
+    this.blockList.forEach(block => {
+      if (block.order >= data.order && block.id != data.blockId) block.order++;
+    });
+  }
 }
 

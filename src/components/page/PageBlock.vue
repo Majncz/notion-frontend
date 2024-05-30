@@ -2,7 +2,8 @@
     <div class="block-wrapper" @mouseover="buttonsVisible = true" @mouseleave="buttonsVisible = false">
         <PageBlockButtons :buttonsVisible="buttonsVisible" />
         <PageText v-if="page.getBlockById(props.blockId).type == 'TEXT'" v-model="block"
-            @contentchange="(data) => { page.contentChange(data, props.blockId); console.log('CONTENT CHANGE') }" />
+            @contentchange="(data) => { page.contentChange(data, props.blockId); console.log('CONTENT CHANGE') }"
+            @newblock="page.newBlock(block.order)" />
     </div>
 </template>
 

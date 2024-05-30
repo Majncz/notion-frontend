@@ -25,6 +25,8 @@ export const useSocketStore = defineStore("socket", () => {
         } else if (data.item === "blockText") {
             usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content;
             console.log(usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content);
+        } else if (data.item === "newBlock") {
+            usePageManagerStore().getPageById(data.pageId).pushBlock(data);
         }
     });
 
