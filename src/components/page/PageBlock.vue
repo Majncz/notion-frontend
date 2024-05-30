@@ -3,7 +3,7 @@
         <PageBlockButtons :buttonsVisible="buttonsVisible" @newblock="page.newBlock(block.order)" />
         <PageText v-if="page.getBlockById(props.blockId).type == 'TEXT'" v-model="block"
             @contentchange="(data) => { page.contentChange(data, props.blockId); console.log('CONTENT CHANGE') }"
-            @newblock="page.newBlock(block.order)" />
+            @newblock="(content) => page.newBlock(block.order, content)" />
     </div>
 </template>
 

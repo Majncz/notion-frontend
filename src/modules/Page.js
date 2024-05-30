@@ -42,22 +42,29 @@ export default class Page {
     }
   }
 
-  newBlock(currentBlockOrder) {
-    const newBlock = new Block({ order: currentBlockOrder + 1 });
-    console.log("blockList", this);
-    this.blockList.splice(currentBlockOrder + 1, 0, newBlock);
+  // from user
+  newBlock(currentBlockOrder, content = "") {
+    const newBlock = new Block({ order: currentBlockOrder + 1, content: content });
+    newBlock.newlyCreated = true;
+    this.blockList.push(newBlock);
+
+    this.blockList.forEach(block => {
+      if (block.order >= newBlock.order && block.id != newBlock.id) block.order++;
+    });
+
     useSocketStore().socket.emit("pageChange", {
       item: "newBlock",
       pageId: this.id,
       blockId: newBlock.id,
       order: newBlock.order,
+      content: newBlock.content,
       date: new Date().getTime()
     });
   }
 
   // from socket.io
   pushBlock(data) {
-    this.blockList.push(new Block({ order: data.order, id: data.blockId }));
+    this.blockList.push(new Block({ order: data.order, id: data.blockId, content: data.content }));
     this.blockList.forEach(block => {
       if (block.order >= data.order && block.id != data.blockId) block.order++;
     });

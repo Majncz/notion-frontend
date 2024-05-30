@@ -20,7 +20,8 @@ onMounted(() => {
     setTimeout(() => {
         textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
     }, 100);
-    if (block.newlyCreated == true) textareaRef.value.focus();
+
+    if (block.value.newlyCreated == true) textareaRef.value.focus();
 });
 
 watch(() => block.value.content, () => {
