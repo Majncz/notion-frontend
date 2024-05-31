@@ -19,17 +19,22 @@ import axios from 'axios';
       console.log(result);
 
       if (result.access_token) {
-        //this.$router.push({ name: 'home' });
         localStorage.setItem('access_token', result.access_token);
-        
-
         axios.post('http://localhost:8080/ranajakub/fotionapi/', { message: result.access_token })
         .then(response => {
           console.log('Response:', response.data);
+          localStorage.setItem('userId', response.data);
+          console.log('-----------')
+          let userId = localStorage.getItem('userId')
+          console.log(userId)
+          console.log('-----------')
         })
         .catch(error => {
           console.error('There was an error!', error);
         });
+
+
+        //this.$router.push({ name: 'home' });
      }
      
     }
