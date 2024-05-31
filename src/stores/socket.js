@@ -24,6 +24,7 @@ export const useSocketStore = defineStore("socket", () => {
 
         if (data.item === "title") {
             usePageManagerStore().getPageById(data.pageId).title = data.content;
+            usePageManagerStore().pageIdsAndTitles.find(page => page.id === data.pageId).title = data.content;
         } else if (data.item === "blockText") {
             usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content;
             console.log(usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content);
