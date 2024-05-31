@@ -23,7 +23,7 @@ import axios from 'axios';
         axios.post('/auth/google', { message: result.access_token })
         .then(response => {
           console.log('Response:', response.data);
-          localStorage.setItem('userIdOauth', response.data);
+          localStorage.setItem('userId', response.data);
           console.log('-----------')
           let userId = localStorage.getItem('userId')
           console.log(userId)
