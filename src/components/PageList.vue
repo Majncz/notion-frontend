@@ -2,7 +2,8 @@
     <aside class="left-side-menu">
         <h2>Jakub Rana</h2>
         <section class="page-list">
-            <button v-for="pageIdAndTitle in pageManagerStore.pageIdsAndTitles" :key="pageIdAndTitle.id">
+            <button v-for="pageIdAndTitle in pageManagerStore.pageIdsAndTitles" :key="pageIdAndTitle.id"
+                @click="pageManagerStore.openPage(pageIdAndTitle.id)">
                 <img src="../assets/icons/document-text.svg" alt="page icon">
                 <p>{{ pageIdAndTitle.title }}</p>
             </button>
@@ -23,6 +24,9 @@ const pageManagerStore = usePageManagerStore();
 function addPage() {
     axios.post("/page", { title: "Untitled page" });
 }
+
+
+
 </script>
 
 <style lang="scss" scoped>

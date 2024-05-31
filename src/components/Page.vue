@@ -30,8 +30,8 @@ const contextVisible = computed(() => contextStore.visible);
 
 const page = ref(null);
 
-watch(() => pageManagerStore.pages, () => {
-    page.value = pageManagerStore.pages[0];
+watch(() => pageManagerStore.page, () => {
+    page.value = pageManagerStore.page;
     areDataLoaded.value = true;
 }, { deep: true })
 
