@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1 contenteditable="true" @input="handleInput">{{ props.data }}</h1>
+        <h1 contenteditable="true" @input="handleInput" @keydown.enter.prevent="handleEnter">{{ props.data }}</h1>
     </div>
 </template>
 
@@ -23,6 +23,13 @@ const props = defineProps({
 function handleInput(event) {
     pageManagerStore.getPageById(props.pageId).changeTitle(event.target.innerText);
 }
+
+function handleEnter(event) {
+    pageManagerStore.getPageById(props.pageId).newBlock(-1);
+}
+
+
+
 </script>
 
 <style lang="scss" scoped>
