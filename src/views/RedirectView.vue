@@ -20,10 +20,10 @@ import axios from 'axios';
 
       if (result.access_token) {
         localStorage.setItem('access_token', result.access_token);
-        axios.post('http://localhost:8080/ranajakub/fotionapi/', { message: result.access_token })
+        axios.post('/auth/google', { message: result.access_token })
         .then(response => {
           console.log('Response:', response.data);
-          localStorage.setItem('userId', response.data);
+          localStorage.setItem('userIdOauth', response.data);
           console.log('-----------')
           let userId = localStorage.getItem('userId')
           console.log(userId)
@@ -34,7 +34,7 @@ import axios from 'axios';
         });
 
 
-        //this.$router.push({ name: 'home' });
+        this.$router.push({ name: 'home' });
      }
      
     }

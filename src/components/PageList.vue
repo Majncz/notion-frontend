@@ -1,7 +1,7 @@
 <template>
     <aside class="left-side-menu">
         <h2>Jakub Rana</h2>
-        <h3>{{ userId }}</h3>
+        <h3>{{ userIdOauth }}</h3>
         <section class="page-list">
             <button v-for="pageIdAndTitle in pageManagerStore.pageIdsAndTitles" :key="pageIdAndTitle.id"
                 @click="pageManagerStore.openPage(pageIdAndTitle.id)">
@@ -26,7 +26,7 @@ function addPage() {
     axios.post("/page", { title: "Untitled page" });
 }
 
-let userId = localStorage.getItem('userId')
+let userIdOauth = localStorage.getItem('userIdOauth')
 
 </script>
 
