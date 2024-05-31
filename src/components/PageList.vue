@@ -22,8 +22,9 @@ import axios from "axios";
 
 const pageManagerStore = usePageManagerStore();
 
-function addPage() {
-    axios.post("/page", { title: "Untitled page" });
+async function addPage() {
+    await axios.post("/page", { title: "Untitled page" });
+    pageManagerStore.getNewPageIdsAndTitles();
 }
 
 let userIdOauth = localStorage.getItem('userIdOauth')
@@ -48,7 +49,6 @@ aside.left-side-menu {
     section.page-list {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
         margin-bottom: 1rem;
     }
 
@@ -57,15 +57,22 @@ aside.left-side-menu {
         background-color: transparent;
         border: none;
         text-align: left;
-        padding: 0.3rem 0;
+        padding: 0.5rem 1rem;
         font-size: 1.2rem;
         font-weight: 500;
+        border-radius: 0.5rem;
 
         display: flex;
         align-items: center;
         gap: 1rem;
 
         cursor: pointer;
+
+        transition: background-color 0.1s;
+
+        &:hover {
+            background-color: rgb(240, 240, 240);
+        }
 
         img {
             width: 1.5rem;

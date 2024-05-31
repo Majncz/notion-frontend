@@ -20,10 +20,15 @@ export const usePageManagerStore = defineStore("pageManager", () => {
         page.value = new Page((await axios.get(`/page/${pageId}`)).data);
     }
 
+    async function getNewPageIdsAndTitles() {
+        pageIdsAndTitles.value = (await axios.get("/page")).data;
+    }
+
     return {
         page,
         pageIdsAndTitles,
-        openPage
+        openPage,
+        getNewPageIdsAndTitles
     };
 });
 
