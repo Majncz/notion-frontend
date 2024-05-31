@@ -1,9 +1,10 @@
 <template>
     <div class="block-wrapper" @mouseover="buttonsVisible = true" @mouseleave="buttonsVisible = false">
-        <PageBlockButtons :buttonsVisible="buttonsVisible" @newblock="page.newBlock(block.order)" />
+        <PageBlockButtons :buttonsVisible="buttonsVisible" :blockId="props.blockId" v-model="page"
+            @newblock="page.newBlock(block.order)" />
         <PageText v-if="page.getBlockById(props.blockId).type == 'TEXT'" v-model="block"
             @contentchange="(data) => { page.contentChange(data, props.blockId); console.log('CONTENT CHANGE') }"
-            @newblock="(content) => page.newBlock(block.order, content)" />
+            @newblock="(content) => page.newBlock(block.order, content)" @delete="page.deleteBlock(props.blockId)" />
     </div>
 </template>
 

@@ -11,7 +11,7 @@ const block = defineModel({
     required: true
 });
 
-const emit = defineEmits(['contentchange', "newblock"]);
+const emit = defineEmits(['contentchange', "newblock", "delete"]);
 
 const textareaRef = ref(null);
 const content = ref(block.value.content); // this may seem unnecessary as it seemingly provides the same purpose as `block.value.content`, but it's here to prevent multiple clients from going into an infinite loop of sending each other's changes that were NOT made by the user but recieved by websocket
@@ -58,6 +58,9 @@ function preventEnter(event) {
 
         content.value = caretContent.before;
         emit("newblock", caretContent.after);
+    }
+    if (event.keyCode === 8 && content.value == "") {
+        emit("delete");
     }
 }
 </script>

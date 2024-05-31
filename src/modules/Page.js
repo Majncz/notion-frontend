@@ -69,5 +69,30 @@ export default class Page {
       if (block.order >= data.order && block.id != data.blockId) block.order++;
     });
   }
+
+  // from user
+  deleteBlock(blockId) {
+    const order = this.getBlockById(blockId).order;
+    this.blockList = this.blockList.filter(block => block.id != blockId);
+    this.blockList.forEach(block => {
+      if (block.order > order) block.order--;
+    });
+    useSocketStore().socket.emit("pageChange", {
+      item: "deleteBlock",
+      pageId: this.id,
+      blockId: blockId,
+      date: new Date().getTime()
+    });
+  }
+
+  // from socket.io
+  removeBlock(blockId) {
+    console.log("ENGOERGNrg", blockId, this.blockList);
+    const order = this.getBlockById(blockId).order;
+    this.blockList = this.blockList.filter(block => block.id != blockId);
+    this.blockList.forEach(block => {
+      if (block.order > order) block.order--;
+    });
+  }
 }
 

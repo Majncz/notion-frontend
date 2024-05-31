@@ -17,7 +17,9 @@ export const useSocketStore = defineStore("socket", () => {
     //   blockId: "blockId",
     //   date: new Date().getTime()
     // }
+    console.log("GULAG1")
     socket.on("pageChange", (data) => {
+        console.log("GULAG");
         if (usePageManagerStore().getPageById(data.pageId) == undefined) return;
 
         if (data.item === "title") {
@@ -27,6 +29,8 @@ export const useSocketStore = defineStore("socket", () => {
             console.log(usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content);
         } else if (data.item === "newBlock") {
             usePageManagerStore().getPageById(data.pageId).pushBlock(data);
+        } else if (data.item === "deleteBlock") {
+            usePageManagerStore().getPageById(data.pageId).removeBlock(data.blockId);
         }
     });
 
