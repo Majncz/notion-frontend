@@ -4,7 +4,7 @@ import axios from "axios";
 import Page from "@/modules/Page.js";
 
 export const usePageManagerStore = defineStore("pageManager", () => {
-    const pages = ref([]);
+    const page = ref();
     const pageIdsAndTitles = ref([]); // [{ id: "123", title: "title" }]
 
     (async () => {
@@ -12,16 +12,18 @@ export const usePageManagerStore = defineStore("pageManager", () => {
         // console.log(pageIdsAndTitles.value);
         // console.log(pageIdsAndTitles.value[0]);
 
-        pages.value.push(new Page((await axios.get(`/page/${pageIdsAndTitles.value[0].id}`)).data)); // this will load dynamicly based on the page you are opening in the future
-        console.log("pages: ", pages.value);
+        page.value = new Page((await axios.get(`/page/${pageIdsAndTitles.value[0].id}`)).data); // this will load dynamicly based on the page you are opening in the future
+        console.log("page: ", page.value);
     })();
 
-    const getPageById = computed(() => (id) => pages.value.find((page) => page.id === id));
+    async function openPage(pageId) {
+        page.value = new Page((await axios.get(`/page/${pageId}`)).data);
+    }
 
     return {
-        pages,
+        page,
         pageIdsAndTitles,
-        getPageById
+        openPage
     };
 });
 

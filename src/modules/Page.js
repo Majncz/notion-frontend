@@ -1,6 +1,7 @@
 import Block from "@/modules/Block.js";
 import { ref } from "vue";
 import { useSocketStore } from "@/stores/socket.js";
+import { usePageManagerStore } from "@/stores/pageManager.js";
 
 export default class Page {
   title = "";
@@ -17,6 +18,7 @@ export default class Page {
 
   changeTitle(newTitle) {
     this.title = newTitle;
+    usePageManagerStore().pageIdsAndTitles.find(page => page.id === this.id).title = newTitle;
     useSocketStore().socket.emit("pageChange", {
       item: "title",
       content: newTitle,

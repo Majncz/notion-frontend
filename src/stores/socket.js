@@ -20,17 +20,18 @@ export const useSocketStore = defineStore("socket", () => {
     console.log("GULAG1")
     socket.on("pageChange", (data) => {
         console.log("GULAG");
-        if (usePageManagerStore().getPageById(data.pageId) == undefined) return;
+        if (usePageManagerStore().page == undefined || usePageManagerStore().page.id !== data.pageId) return;
 
         if (data.item === "title") {
-            usePageManagerStore().getPageById(data.pageId).title = data.content;
+            usePageManagerStore().page.title = data.content;
+            usePageManagerStore().pageIdsAndTitles.find(page => page.id === data.pageId).title = data.content;
         } else if (data.item === "blockText") {
-            usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content;
-            console.log(usePageManagerStore().getPageById(data.pageId).getBlockById(data.blockId).content = data.content);
+            usePageManagerStore().page.getBlockById(data.blockId).content = data.content;
+            console.log(usePageManagerStore().page.getBlockById(data.blockId).content = data.content);
         } else if (data.item === "newBlock") {
-            usePageManagerStore().getPageById(data.pageId).pushBlock(data);
+            usePageManagerStore().page.pushBlock(data);
         } else if (data.item === "deleteBlock") {
-            usePageManagerStore().getPageById(data.pageId).removeBlock(data.blockId);
+            usePageManagerStore().page.removeBlock(data.blockId);
         }
     });
 
