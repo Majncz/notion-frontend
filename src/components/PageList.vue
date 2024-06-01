@@ -12,6 +12,10 @@
             <img src="../assets/icons/plus.svg" alt="Add page icon">
             <p>Add page</p>
         </button>
+        <button>
+            <img src="../assets/icons/user-add.svg" alt="Add user icon">
+            <p>Manage users of current page</p>
+        </button>
         <button @click="signOut">
             <img src="../assets/icons/logout.svg" alt="Sign out icon">
             <p>Sign out </p>
@@ -32,7 +36,7 @@ async function addPage() {
     await axios.post("/page", { title: "Untitled page" });
     pageManagerStore.getNewPageIdsAndTitles();
 }
-function signOut(){
+function signOut() {
     localStorage.removeItem('user');
     window.location.href = '/signin';
 }
@@ -89,7 +93,7 @@ aside.left-side-menu {
             height: 1.5rem;
         }
 
-        
+
     }
 }
 </style>

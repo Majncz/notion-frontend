@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from 'uuid';
+import { ref } from 'vue';
 
 export const useGlobalStore = defineStore('global', () => {
     console.log("Proc kurva")
@@ -15,11 +16,14 @@ export const useGlobalStore = defineStore('global', () => {
     //const userId = user.id;
     const apiUrl = 'http://localhost:8080/ranajakub/fotionapi';
 
+    const usersModalVisible = ref(true);
+
     return {
         apiUrl,
         user,
         userId,
-        generateUUID
+        generateUUID,
+        usersModalVisible
     }
 })
 
