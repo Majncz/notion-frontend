@@ -1,8 +1,8 @@
 <template>
 <main>
-  <h1>Welcome to fotion</h1>
+  <h1>Welcome to <b>fotion</b></h1>
 
-  <h2>Before you start <b>sign in</b></h2>
+  <h2>Before you start sign in</h2>
   
   <button @click="login" class="button-85">
     <img src="/src/assets/icons/google-logo-2.webp" alt="google logo icon">
@@ -59,8 +59,8 @@
   flex-direction: column;
   gap: 4rem;
   h1{
+    color: #141618;
     font-size: 3rem;
-    font-weight: bold;
   }
   h2{
     color: #32363c;
@@ -77,11 +77,12 @@
 
 .button-85 {
   display: flex;
-  justify-content:space-around;
+  justify-content:flex-start;
+  gap: 1.6rem;
   align-items: center;
-
+  font-size: 1.2rem;
   padding: 1rem;
-  width: 10rem;
+  width: 12rem;
   color: rgb(255, 255, 255);
   background: #111;
   cursor: pointer;
