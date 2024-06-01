@@ -13,7 +13,7 @@
             <p>Add page</p>
         </button>
         <button @click="signOut">
-            <img src="../assets/icons/minus.svg" alt="Sign out icon">
+            <img src="../assets/icons/logout.svg" alt="Sign out icon">
             <p>Sign out </p>
         </button>
     </aside>
