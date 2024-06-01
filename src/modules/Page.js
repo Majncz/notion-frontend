@@ -1,78 +1,100 @@
 import Block from "@/modules/Block.js";
 import { ref } from "vue";
-import { useGlobalStore } from "@/stores/global.js";
+import { useSocketStore } from "@/stores/socket.js";
+import { usePageManagerStore } from "@/stores/pageManager.js";
 
 export default class Page {
-  title = ref("");
-  blockList = ref([]);
+  title = "";
+  blockList = [];
+  id;
 
   constructor(data) {
     this.title = data.title;
-    console.log(data.blocks)
+    this.id = data.id;
     data.blocks.forEach(block => {
-      this.blockList.value.push(new Block(block, block.id));
+      this.blockList.push(new Block(block));
     });
   }
 
-  getBlockKeys() {
-    let keys = [];
-    this.blockList.value.forEach((value) => {
-      keys.push(value.id);
-    })
-    return keys;
-  }
-
   changeTitle(newTitle) {
-    this.title.value.content = newTitle;
-    this.postData();
+    this.title = newTitle;
+    usePageManagerStore().pageIdsAndTitles.find(page => page.id === this.id).title = newTitle;
+    useSocketStore().socket.emit("pageChange", {
+      item: "title",
+      content: newTitle,
+      pageId: this.id,
+      date: new Date().getTime() // date to indentify which change is newer if someones internet is bad
+    });
   }
 
-  postData() {
-    let data = {};
-    data[this.title.value.id] = this.title.value;
-    data[this.title.value.id].id = undefined;
-
-    this.blockList.value.forEach((value) => {
-      data[value.id] = value.exportDatabase();
-    })
-
-    fetch(`http://${useGlobalStore().apiUrl}/page`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ value: data })
-    })
-      .catch((error) => {
-        console.error('Error:', error); // Handle errors
-      });
+  contentChange(newContent, blockId) {
+    this.getBlockById(blockId).content = newContent;
+    useSocketStore().socket.emit("pageChange", {
+      item: "blockText",
+      content: newContent,
+      pageId: this.id,
+      blockId: blockId,
+      date: new Date().getTime() // date to indentify which change is newer if someones internet is bad
+    });
   }
 
-  getBlockByID(id) {
-    for (const block of this.blockList.value) {
+  getBlockById(id) {
+    for (const block of this.blockList) {
       if (block.id == id) return block;
     }
   }
 
-  getBlockData(id) {
-    const block = this.getBlockByID(id);
-    return block.export();
-  }
-
-  blockContentChange(newContent, id) {
-    this.getBlockByID(id).content = newContent;
-  }
-
-  newBlock(previousBlockID, oldContent) {
-    const previousBlock = this.getBlockByID(previousBlockID);
-    let newBlock = new Block(previousBlock.export(), crypto.randomUUID());
-    newBlock.content = oldContent;
+  // from user
+  newBlock(currentBlockOrder, content = "") {
+    const newBlock = new Block({ order: currentBlockOrder + 1, content: content });
     newBlock.newlyCreated = true;
-    const newBlockIndex = this.blockList.value.findIndex((value) => value.id == previousBlock.id) + 1;
-    this.blockList.value = [
-      ...this.blockList.value.slice(0, newBlockIndex),
-      newBlock,
-      ...this.blockList.value.slice(newBlockIndex)
-    ]
+    this.blockList.push(newBlock);
+
+    this.blockList.forEach(block => {
+      if (block.order >= newBlock.order && block.id != newBlock.id) block.order++;
+    });
+
+    useSocketStore().socket.emit("pageChange", {
+      item: "newBlock",
+      pageId: this.id,
+      blockId: newBlock.id,
+      order: newBlock.order,
+      content: newBlock.content,
+      date: new Date().getTime()
+    });
+  }
+
+  // from socket.io
+  pushBlock(data) {
+    this.blockList.push(new Block({ order: data.order, id: data.blockId, content: data.content }));
+    this.blockList.forEach(block => {
+      if (block.order >= data.order && block.id != data.blockId) block.order++;
+    });
+  }
+
+  // from user
+  deleteBlock(blockId) {
+    const order = this.getBlockById(blockId).order;
+    this.blockList = this.blockList.filter(block => block.id != blockId);
+    this.blockList.forEach(block => {
+      if (block.order > order) block.order--;
+    });
+    useSocketStore().socket.emit("pageChange", {
+      item: "deleteBlock",
+      pageId: this.id,
+      blockId: blockId,
+      date: new Date().getTime()
+    });
+  }
+
+  // from socket.io
+  removeBlock(blockId) {
+    console.log("ENGOERGNrg", blockId, this.blockList);
+    const order = this.getBlockById(blockId).order;
+    this.blockList = this.blockList.filter(block => block.id != blockId);
+    this.blockList.forEach(block => {
+      if (block.order > order) block.order--;
+    });
   }
 }
+

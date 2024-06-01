@@ -1,25 +1,35 @@
 <template>
     <div>
-        <h1 contenteditable="true" @input="handleInput">{{ props.data }}</h1>
+        <h1 contenteditable="true" @input="handleInput" @keydown.enter.prevent="handleEnter">{{ props.data }}</h1>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { usePageManagerStore } from "@/stores/pageManager.js";
+
+const pageManagerStore = usePageManagerStore();
 
 const props = defineProps({
     data: {
         type: String,
         required: true
+    },
+    pageId: {
+        type: String,
+        required: true
     }
 });
 
-const emit = defineEmits(['titlechange']);
-
 function handleInput(event) {
-    const updatedTitle = event.target.innerText;
-    emit('titlechange', updatedTitle);
+    pageManagerStore.page.changeTitle(event.target.innerText);
 }
+
+function handleEnter(event) {
+    pageManagerStore.page.newBlock(-1);
+}
+
+
+
 </script>
 
 <style lang="scss" scoped>
