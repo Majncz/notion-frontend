@@ -1,7 +1,16 @@
 <template>
-    <div>
-      <button @click="login">Přihlásit se přes Google</button>
-    </div>
+<main>
+  <h1>Welcome to fotion</h1>
+
+  <h2>Before you start <b>sign in</b></h2>
+  
+  <button @click="login" class="button-85">
+    <img src="/src/assets/icons/google-logo-2.webp" alt="google logo icon">
+    SIGN IN
+  </button>
+  
+</main>
+    
   </template>
   
   <script>
@@ -20,8 +29,109 @@
       if (localStorage.getItem('user')) {
         window.location.href = '/';
       }
-    }
-      
-    
+    }     
   }
   </script>
+<style lang="scss" scoped>
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+ b{
+  font-weight: bold;
+ }
+ main {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 4rem;
+  h1{
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  h2{
+    color: #32363c;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  img{
+    height: 2rem;
+    width: 2rem;
+  }
+}
+//https://getcssscan.com/css-buttons-examples
+
+.button-85 {
+  display: flex;
+  justify-content:space-around;
+  align-items: center;
+
+  padding: 1rem;
+  width: 10rem;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  transition: .2s;
+}
+.button-85:hover {
+  scale: 1.05;
+}
+
+.button-85:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+
+.button-85:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+</style>
