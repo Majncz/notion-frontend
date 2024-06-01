@@ -15,6 +15,13 @@
         const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}`;
         window.location.href = authUrl;
       }
+    },
+    mounted(){
+      if (localStorage.getItem('user')) {
+        window.location.href = '/';
+      }
     }
+      
+    
   }
   </script>

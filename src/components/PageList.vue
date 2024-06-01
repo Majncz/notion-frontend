@@ -12,6 +12,9 @@
             <p>Add page</p>
             <img src="../assets/icons/plus.svg" alt="Add page icon">
         </button>
+        <button @click="signOut">
+            <p>sign out</p>
+        </button>
     </aside>
 </template>
 
@@ -19,6 +22,7 @@
 import { usePageManagerStore } from "@/stores/pageManager";
 import { useGlobalStore } from "@/stores/global";
 import axios from "axios";
+import router from "@/router";
 
 const pageManagerStore = usePageManagerStore();
 const globalStore = useGlobalStore();
@@ -26,6 +30,10 @@ const globalStore = useGlobalStore();
 async function addPage() {
     await axios.post("/page", { title: "Untitled page" });
     pageManagerStore.getNewPageIdsAndTitles();
+}
+function signOut(){
+    localStorage.removeItem('user');
+    window.location.href = '/signin';
 }
 
 </script>
