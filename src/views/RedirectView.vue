@@ -1,44 +1,43 @@
 <template>
-    <div>
-      <p>Processing login...</p>
-    </div>
-  </template>
-  
-  <script>
+  <div>
+    <p>Processing login...</p>
+  </div>
+</template>
+
+<script>
 import axios from 'axios';
 
-  export default {
-    
-    mounted() {
-      const hash = window.location.hash.substr(1);
-      const result = hash.split('&').reduce((res, item) => {
-        let parts = item.split('=');
-        res[parts[0]] = parts[1];
-        return res;
-      }, {});
-      console.log(result);
+export default {
 
-      if (result.access_token) {
-        localStorage.setItem('access_token', result.access_token);
-        axios.post('/auth/google', { message: result.access_token })
+  mounted() {
+    const hash = window.location.hash.substr(1);
+    const result = hash.split('&').reduce((res, item) => {
+      let parts = item.split('=');
+      res[parts[0]] = parts[1];
+      return res;
+    }, {});
+    console.log("superman", result);
+
+    if (result.access_token) {
+      localStorage.setItem('access_token', result.access_token);
+      axios.post('/auth/google', { message: result.access_token })
         .then(response => {
           console.log('Response:', response.data);
-          localStorage.setItem('userId', response.data);
+          localStorage.setItem('user', JSON.stringify(response.data));
           console.log('-----------')
-          let userId = localStorage.getItem('userId')
+          let userId = JSON.parse(localStorage.getItem('user')).id
           console.log(userId)
           console.log('-----------')
+
+          window.location.href = '/';
         })
         .catch(error => {
           console.error('There was an error!', error);
         });
-
-
-        this.$router.push({ name: 'home' });
-     }
-     
     }
+
   }
+}
 /*
   // insert new user to database
 const { PrismaClient } = require('@prisma/client');
@@ -67,4 +66,4 @@ main()
     await prisma.$disconnect();
   });
   */
-  </script>
+</script>

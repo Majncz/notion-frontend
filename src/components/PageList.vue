@@ -1,7 +1,6 @@
 <template>
     <aside class="left-side-menu">
-        <h2>Jakub Rana</h2>
-        <h3>{{ userId }}</h3>
+        <h2>{{ globalStore.user.name }}</h2>
         <section class="page-list">
             <button v-for="pageIdAndTitle in pageManagerStore.pageIdsAndTitles" :key="pageIdAndTitle.id"
                 @click="pageManagerStore.openPage(pageIdAndTitle.id)">
@@ -18,16 +17,16 @@
 
 <script setup>
 import { usePageManagerStore } from "@/stores/pageManager";
+import { useGlobalStore } from "@/stores/global";
 import axios from "axios";
 
 const pageManagerStore = usePageManagerStore();
+const globalStore = useGlobalStore();
 
 async function addPage() {
     await axios.post("/page", { title: "Untitled page" });
     pageManagerStore.getNewPageIdsAndTitles();
 }
-
-let userId = localStorage.getItem('userId')
 
 </script>
 
