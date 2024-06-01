@@ -12,7 +12,7 @@
             <img src="../assets/icons/plus.svg" alt="Add page icon">
             <p>Add page</p>
         </button>
-        <button>
+        <button @click="globalStore.usersModalVisible = true">
             <img src="../assets/icons/user-add.svg" alt="Add user icon">
             <p>Manage users of current page</p>
         </button>

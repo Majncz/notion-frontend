@@ -2,7 +2,7 @@
     <div class="home-wrapper">
         <PageList />
         <Page />
-        <UsersModal v-show="globalStore.usersModalVisible" />
+        <UsersModal v-if="globalStore.usersModalVisible" />
     </div>
 </template>
 
