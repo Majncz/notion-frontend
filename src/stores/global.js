@@ -14,7 +14,7 @@ export const useGlobalStore = defineStore('global', () => {
     if ((user == undefined || user == "null") && window.location.pathname != '/signin' && window.location.pathname != '/callback') window.location.href = '/signin';
 
     //const userId = user.id;
-    const apiUrl = 'http://localhost:8080/ranajakub/fotionapi';
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080/ranajakub/fotionapi' : 'https://fotionapi.ranajakub.com';
 
     const usersModalVisible = ref(false);
 

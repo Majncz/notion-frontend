@@ -18,7 +18,7 @@ export default {
     methods: {
         login() {
             const clientId = '263164227738-3ue7ai4m5hdsjul67skup5q9o2mfk59n.apps.googleusercontent.com';
-            const redirectUri = 'http://localhost:5173/callback';
+            const redirectUri = `${window.location.origin}/callback`;
             const scope = 'profile email';
             const responseType = 'token';
             const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}`;
