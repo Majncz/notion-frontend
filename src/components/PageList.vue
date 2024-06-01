@@ -9,11 +9,12 @@
             </button>
         </section>
         <button @click="addPage">
-            <p>Add page</p>
             <img src="../assets/icons/plus.svg" alt="Add page icon">
+            <p>Add page</p>
         </button>
         <button @click="signOut">
-            <p>sign out</p>
+            <img src="../assets/icons/minus.svg" alt="Sign out icon">
+            <p>Sign out </p>
         </button>
     </aside>
 </template>
@@ -46,6 +47,7 @@ aside.left-side-menu {
 
     padding: 6rem 2rem;
 
+
     h2 {
         margin-bottom: 2rem;
         font-size: 1.5rem;
@@ -58,6 +60,7 @@ aside.left-side-menu {
         flex-direction: column;
         margin-bottom: 1rem;
     }
+
 
     button {
         width: 100%;
@@ -85,6 +88,8 @@ aside.left-side-menu {
             width: 1.5rem;
             height: 1.5rem;
         }
+
+        
     }
 }
 </style>
