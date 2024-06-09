@@ -15,6 +15,8 @@ export const useGlobalStore = defineStore('global', () => {
 
     //const userId = user.id;
     const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080/ranajakub/fotionapi' : 'https://fotionapi.ranajakub.com';
+    const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080/ranajakub/fotionapi' : 'https://fotionapi.ranajakub.com/ranajakub/fotionapi';
+    //const apiUrl = 'https://fotionapi.ranajakub.com';
 
     const usersModalVisible = ref(false);
 
